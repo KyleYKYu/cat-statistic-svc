@@ -1,0 +1,20 @@
+{
+  "name": "cat-statistic-svc",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://hagithub.home/yyk146/cat-statistic-svc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "oracledb": "^6.8.0",
+    "uuid": "^11.1.0"
+  }
+}
