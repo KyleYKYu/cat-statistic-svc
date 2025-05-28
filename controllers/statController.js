@@ -38,29 +38,33 @@ async function uploadCsv(req, res, next) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
+    const { METRICS, YEAR, MONTH } = req.body; // Extract metadata from the request body
+    if (!METRICS || !YEAR || !MONTH) {
+      return res.status(400).json({ error: 'Metadata is required' });
+    }
+
     const filePath = path.join(__dirname, '../uploads', req.file.filename);
 
     const stats = [];
     fs.createReadStream(filePath)
       .pipe(csvParser())
       .on('data', (row) => {
-        stats.push(row); // Push each row into the stats array
+        stats.push({ ...row }); // Add metadata to each row
       })
       .on('end', async () => {
         try {
           // Insert each row into the database
           for (const stat of stats) {
-            const { CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_YEAR, RECORD_MONTH } = stat;
+            const { HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT } = stat;
             
-            console.log(stat);
-            
-            //await statModel.addStat(CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_YEAR, RECORD_MONTH);
+            await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMAL", NORMALCOUNT, YEAR, MONTH);
+            await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITY", PRIORITYCOUNT, YEAR, MONTH);
           }
 
           // Remove the temporary file
           fs.unlinkSync(filePath);
 
-          res.status(201).json({ message: 'CSV file processed and data inserted successfully' });
+          res.status(201).json({ message: 'CSV file with metadata processed and data inserted successfully' });
         } catch (err) {
           next(err);
         }
@@ -71,6 +75,55 @@ async function uploadCsv(req, res, next) {
   } catch (err) {
     next(err);
   }
+}
+
+function getCluster(hospCode) {
+  const cluster = {
+    CHC: "HKEC",
+    PYN: "HKEC",
+    RH: "HKEC",
+    SJH: "HKEC",
+    TSK: "HKEC",
+    TWE: "HKEC",
+    WCH: "HKEC",
+    DKC: "HKEC",
+    FYK: "HKEC",
+    GH: "HKEC",
+    ML: "HKEC",
+    QMH: "HKEC",
+    TWH: "HKEC",
+    TYH: "HKEC",
+    BH: "KCC",	
+    HCH: "KCC",	
+    HKE: "KCC",	
+    KH: "KCC",	
+    KWH: "KCC",	
+    OLM: "KCC",	
+    QEH: "KCC",	
+    WTS: "KCC",
+    HHH: "KEC",
+    TKO: "KEC",	
+    UCH: "KEC",
+    CMC: "KWC",	
+    KCH: "KWC",	
+    NLT: "KWC",	
+    PMH: "KWC",	
+    YCH: "KWC",
+    AHN: "NTEC",	
+    BBH: "NTEC",	
+    CHS: "NTEC",	
+    NDH: "NTEC",	
+    PWH: "NTEC",	
+    SH: "NTEC",	
+    TPH: "NTEC",
+    CPH: "NTWC",	
+    POH: "NTWC",	
+    SLH: "NTWC",	
+    TMH: "NTWC",	
+    TSH: "NTWC"
+  }
+
+  return cluster[hospCode.toUpperCase()] || null;
 }
 
 module.exports = { getStats, addStat, uploadCsv };

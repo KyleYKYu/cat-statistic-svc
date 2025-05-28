@@ -43,7 +43,6 @@ async function addStat(clusterCode, hospitalCode, metrics, dataType, value, reco
       `;
 
       const [result] = await db.query(query, [
-
           recordId,
           clusterCode,
           hospitalCode,
