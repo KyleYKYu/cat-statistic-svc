@@ -38,8 +38,8 @@ async function addStat(clusterCode, hospitalCode, metrics, dataType, value, reco
 
       const query = `
           INSERT INTO STATISTIC 
-          (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE, NOW()) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+          (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE, CREATE_DATETIME) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
       `;
 
       const [result] = await db.query(query, [

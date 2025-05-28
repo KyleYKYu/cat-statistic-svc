@@ -56,9 +56,9 @@ async function uploadCsv(req, res, next) {
           // Insert each row into the database
           for (const stat of stats) {
             const { HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT } = stat;
-            
-            await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMAL", NORMALCOUNT, YEAR, MONTH);
-            await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITY", PRIORITYCOUNT, YEAR, MONTH);
+
+            await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS.replace(/^"|"$/g, ''), "NORMAL", NORMALCOUNT, YEAR.replace(/^"|"$/g, ''), MONTH.replace(/^"|"$/g, ''));
+            await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS.replace(/^"|"$/g, ''), "PRIORITY", PRIORITYCOUNT, YEAR.replace(/^"|"$/g, ''), MONTH.replace(/^"|"$/g, ''));
           }
 
           // Remove the temporary file
