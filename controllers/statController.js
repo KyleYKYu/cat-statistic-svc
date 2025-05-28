@@ -1,4 +1,12 @@
 const statModel = require('../models/statModel');
+const csvParser = require('csv-parser');
+const fs = require('fs');
+const path = require('path');
+
+// Middleware for handling file uploads
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files
+
 
 async function getAllStats(req, res, next) {
   try {
@@ -34,4 +42,45 @@ async function addStat(req, res, next) {
   }
 }
 
-module.exports = { getStats, getAllStats, addStat };
+async function uploadCsv(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const filePath = path.join(__dirname, '../uploads', req.file.filename);
+
+    const stats = [];
+    fs.createReadStream(filePath)
+      .pipe(csvParser())
+      .on('data', (row) => {
+        stats.push(row); // Push each row into the stats array
+      })
+      .on('end', async () => {
+        try {
+          // Insert each row into the database
+          for (const stat of stats) {
+            const { CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_YEAR, RECORD_MONTH } = stat;
+            
+            console.log(stat);
+            
+            //await statModel.addStat(CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_YEAR, RECORD_MONTH);
+          }
+
+          // Remove the temporary file
+          fs.unlinkSync(filePath);
+
+          res.status(201).json({ message: 'CSV file processed and data inserted successfully' });
+        } catch (err) {
+          next(err);
+        }
+      })
+      .on('error', (err) => {
+        next(err);
+      });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { getStats, getAllStats, addStat, uploadCsv };

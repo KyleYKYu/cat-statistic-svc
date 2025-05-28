@@ -1,5 +1,6 @@
 module.exports = {
-    user: 'CMS_CAT_USER',
-    password: 'Passw0rd#',
-    connectString: 'cms-s12c-t01:29801/cmscr1s1_sit_rw.cdcoradb11.server.ha.org.hk'
+    host: 'localhost',       // Replace with your MySQL host (e.g., localhost or IP address)
+    user: 'admin',            // Replace with your MySQL username
+    password: 'admin', // Replace with your MySQL password
+    database: 'cat_statistic'  // Replace with your MySQL database name
 };

@@ -50,44 +50,30 @@ async function getStats(HOSPITAL_CODE, METRICS, DATE_FROM, DATE_TO) {
 }
 
 async function addStat(clusterCode, hospitalCode, metrics, dataType, value, recordYear, recordMonth) {
-  const connection = await db.getConnection();
   try {
-    // Set the schema for the session
-    await connection.execute(`ALTER SESSION SET CURRENT_SCHEMA = CAT_USER`);
+      const recordDate = `${recordYear}-${String(recordMonth).padStart(2, '0')}-01`; // Format date as 'YYYY-MM-DD'
+      const recordId = uuidv4(); // Generate a unique ID for the record
 
-    const recordDate = `${recordYear}-${convertMonthToNumber(recordMonth).padStart(2, '0')}-01`; // Construct the date string in 'YYYY-MM-DD' format
+      const query = `
+          INSERT INTO CAT_STATISTIC 
+          (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE) 
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
 
-    // Execute the INSERT statement with bind parameters
-    const result = await connection.execute(
-      `INSERT INTO CAT_STATISTIC 
-        (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE) 
-       VALUES 
-        (:recordId, :clusterCode, :hospitalCode, :metrics, :dataType, :value, TO_DATE(:recordDate, 'YYYY-MM-DD'))`,
-      {
-        recordId: uuidv4(), // Generate a unique ID for the record
-        clusterCode,
-        hospitalCode,
-        metrics,
-        dataType,
-        value,
-        recordDate, // Expecting a date string in 'YYYY-MM-DD' format
-      },
-      { autoCommit: true } // Automatically commit the transaction
-    );
+      const [result] = await db.query(query, [
+          recordId,
+          clusterCode,
+          hospitalCode,
+          metrics,
+          dataType,
+          value,
+          recordDate
+      ]);
 
-    console.log('Insert successful:', result.rowsAffected, 'row(s) inserted.');
-    return result.rowsAffected; // Return the number of rows inserted
+      return result;
   } catch (err) {
-    console.error('Error inserting record:', err);
-    throw err; // Re-throw the error to be handled by the caller
-  } finally {
-    if (connection) {
-      try {
-        await connection.close(); // Always close the connection
-      } catch (err) {
-        console.error('Error closing connection:', err);
-      }
-    }
+      console.error('Error inserting data:', err);
+      throw err;
   }
 }
 

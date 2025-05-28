@@ -1,8 +1,16 @@
-const oracledb = require('oracledb');
-const dbConfig = require('../config/dbConfig');
+const mysql = require('mysql2');
+const dbConfig = require('../config/dbconfig');
 
-async function getConnection() {
-  return await oracledb.getConnection(dbConfig);
-}
+// Create a connection pool
+const pool = mysql.createPool({
+    host: dbConfig.host,
+    user: dbConfig.user,
+    password: dbConfig.password,
+    database: dbConfig.database,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
-module.exports = { getConnection };
+// Export the pool for use in other files
+module.exports = pool.promise();
