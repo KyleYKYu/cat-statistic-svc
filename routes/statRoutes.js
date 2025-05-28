@@ -6,8 +6,6 @@ const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded f
 
 router.get('/stats', statController.getStats);
 
-router.get('/all', statController.getAllStats);
-
 router.post('/new', statController.addStat);
 
 router.post('/upload-csv', upload.single('file'), statController.uploadCsv);

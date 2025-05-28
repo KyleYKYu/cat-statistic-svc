@@ -7,16 +7,6 @@ const path = require('path');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files
 
-
-async function getAllStats(req, res, next) {
-  try {
-    const stats = await statModel.getAllStat();
-    res.json(stats);
-  } catch (err) {
-    next(err); // Pass error to error-handling middleware
-  }
-}
-
 async function getStats(req, res, next) {
   try {
     const { HOSPITAL_CODE, METRICS, DATE_FROM, DATE_TO } = req.query;
@@ -83,4 +73,4 @@ async function uploadCsv(req, res, next) {
   }
 }
 
-module.exports = { getStats, getAllStats, addStat, uploadCsv };
+module.exports = { getStats, addStat, uploadCsv };

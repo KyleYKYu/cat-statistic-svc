@@ -1,66 +1,49 @@
 const db = require('../utils/db');
 const { v4: uuidv4 } = require('uuid');
 
-async function getAllStat() {
-  const connection = await db.getConnection();
+async function getStats(hospitalCode, metrics, dateFrom, dateTo) {
   try {
-    await connection.execute(`ALTER SESSION SET CURRENT_SCHEMA = CAT_USER`);
-    const result = await connection.execute(`SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE FROM CAT_STATISTIC`);
+    const query = `
+      SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, 
+             MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
+      FROM STATISTIC
+      WHERE HOSPITAL_CODE = ? AND METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
+    `;
+
+    const [rows] = await db.query(query, [hospitalCode, metrics, dateFrom, dateTo]);
 
     // Map the rows into an array of entities
-    const stats = result.rows.map(row => ({
-      recordId: row[0],       // Map RECORD_ID
-      clusterCode: row[1],    // Map CLUSTER_CODE
-      hospitalCode: row[2],   // Map HOSPITAL_CODE
-      metrics: row[3],        // Map METRICS
-      dataType: row[4],       // Map DATA_TYPE
-      value: row[5],          // Map VALUE
+    const stats = rows.map(row => ({
+      recordId: row.RECORD_ID,       // Map RECORD_ID
+      clusterCode: row.CLUSTER_CODE, // Map CLUSTER_CODE
+      hospitalCode: row.HOSPITAL_CODE, // Map HOSPITAL_CODE
+      metrics: row.METRICS,          // Map METRICS
+      dataType: row.DATA_TYPE,       // Map DATA_TYPE
+      value: row.VALUE,              // Map VALUE
+      recordMonth: row.recordMonth,  // Map RECORD_DATE as month
+      recordYear: row.recordYear     // Map RECORD_DATE as year
     }));
 
-    return stats;
-  } finally {
-    await connection.close();
-  }
-}
-
-async function getStats(HOSPITAL_CODE, METRICS, DATE_FROM, DATE_TO) {
-  const connection = await db.getConnection();
-  try {
-    await connection.execute(`ALTER SESSION SET CURRENT_SCHEMA = CAT_USER`);
-    const result = await connection.execute(`SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, TO_CHAR(RECORD_DATE, 'MON'), TO_CHAR(RECORD_DATE, 'YYYY') FROM CAT_STATISTIC WHERE HOSPITAL_CODE = :hospitalCode AND METRICS = :metrics AND RECORD_DATE BETWEEN TO_DATE(:dateFrom, 'YYYY-MM-DD') AND TO_DATE(:dateTo, 'YYYY-MM-DD')`,
-      { hospitalCode: HOSPITAL_CODE, metrics: METRICS, dateFrom: DATE_FROM, dateTo: DATE_TO }
-    );
-
-    // Map the rows into an array of entities
-    const stats = result.rows.map(row => ({
-      recordId: row[0],       // Map RECORD_ID
-      clusterCode: row[1],    // Map CLUSTER_CODE
-      hospitalCode: row[2],   // Map HOSPITAL_CODE
-      metrics: row[3],        // Map METRICS
-      dataType: row[4],       // Map DATA_TYPE
-      value: row[5],          // Map VALUE
-      recordMonth: row[6],          // Map RECORD_DATE as month
-      recordYear: row[7],          // Map RECORD_DATE as month
-    }));
-
-    return {"statistic": stats};
-  } finally {
-    await connection.close();
+    return { statistic: stats };
+  } catch (err) {
+    console.error('Error querying database:', err);
+    throw err;
   }
 }
 
 async function addStat(clusterCode, hospitalCode, metrics, dataType, value, recordYear, recordMonth) {
   try {
-      const recordDate = `${recordYear}-${String(recordMonth).padStart(2, '0')}-01`; // Format date as 'YYYY-MM-DD'
+      const recordDate = `${recordYear}-${recordMonth}-01`; // Format date as 'YYYY-MM-DD'
       const recordId = uuidv4(); // Generate a unique ID for the record
 
       const query = `
           INSERT INTO STATISTIC 
-          (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE) 
+          (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE, NOW()) 
           VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
       const [result] = await db.query(query, [
+
           recordId,
           clusterCode,
           hospitalCode,
@@ -96,4 +79,4 @@ function convertMonthToNumber(monthAbbreviation) {
   return months[monthAbbreviation.toUpperCase()] || null;
 }
 
-module.exports = { getAllStat, getStats, addStat };
+module.exports = { getStats, addStat };
