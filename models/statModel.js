@@ -55,7 +55,7 @@ async function addStat(clusterCode, hospitalCode, metrics, dataType, value, reco
       const recordId = uuidv4(); // Generate a unique ID for the record
 
       const query = `
-          INSERT INTO CAT_STATISTIC 
+          INSERT INTO STATISTIC 
           (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE) 
           VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
