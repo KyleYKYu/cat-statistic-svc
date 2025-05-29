@@ -57,7 +57,12 @@ async function uploadCsv(req, res, next) {
         try {
           // Insert each row into the database
           for (const stat of stats) {
-            const { HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, ECG_NOTE_UPDATE, ECG_DELETE} = stat;
+            const { 
+              HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, 
+              ECG_NOTE_UPDATE, ECG_DELETE, NORMALGROUPCOUNT, PRIORITYGROUPCOUNT, 
+              NORMALINDIVIDUALCOUNT, PRIORITYINDIVIDUALCOUNT, PATIENT_HOSP_CODE, 
+              USER_SPECIALTY, TOTAL } = stat;
+
             switch (METRICS) {
               case 'MEMO_CREATE':
               case 'MEMO_DELETE':
@@ -65,13 +70,29 @@ async function uploadCsv(req, res, next) {
               case 'MEMO_REPLY':
               case 'MEMO_REDUCT_REPLY':
               case 'MEMO_SHARE':
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMAL", NORMALCOUNT, YEAR, MONTH);
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITY", PRIORITYCOUNT, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMAL", NORMALCOUNT, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITY", PRIORITYCOUNT, null, null, null, YEAR, MONTH);
+                break;
+              case 'HA_CHAT_DETAIL':
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMALGROUPCOUNT", NORMALGROUPCOUNT, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITYGROUPCOUNT", PRIORITYGROUPCOUNT, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMALINDIVIDUALCOUNT", NORMALINDIVIDUALCOUNT, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITYINDIVIDUALCOUNT", PRIORITYINDIVIDUALCOUNT, null, null, null, YEAR, MONTH);
                 break;
               case 'CHEST_PAIN_GREEN_CHANNEL':
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "CHEST_PAIN_CASE_WITH_ECG_AVAILABLE", CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, YEAR, MONTH);
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOTE_UPDATE", ECG_NOTE_UPDATE, YEAR, MONTH);
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_DELETE", ECG_DELETE, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "CHEST_PAIN_CASE_WITH_ECG_AVAILABLE", CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOTE_UPDATE", ECG_NOTE_UPDATE, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_DELETE", ECG_DELETE, null, null, null, YEAR, MONTH);
+                break;
+              case 'MEMO_CREATE_USER_SPECIALTY':
+                await statModel.addStat(getCluster(PATIENT_HOSP_CODE), PATIENT_HOSP_CODE, METRICS, "TOTAL", TOTAL, null, USER_SPECIALTY, null, YEAR, MONTH);
+                break;
+              case 'USER_SPECIALTY_BY_RANK':
+                break;  
+              case 'MEMO_CREATE_USER_RANK':
+
+                break;  
+              case 'PATIENT_TYPE':
                 break;  
               default:
                 break;

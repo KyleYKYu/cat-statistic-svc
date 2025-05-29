@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 async function getStats(hospitalCode, metrics, dateFrom, dateTo) {
   try {
     const query = `
-      SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, 
+      SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, EPISODE_TYPE 
              MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
       FROM STATISTIC
       WHERE HOSPITAL_CODE = ? AND METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
@@ -20,6 +20,9 @@ async function getStats(hospitalCode, metrics, dateFrom, dateTo) {
       metrics: row.METRICS,          // Map METRICS
       dataType: row.DATA_TYPE,       // Map DATA_TYPE
       value: row.VALUE,              // Map VALUE
+      userRank: row.USER_RANK,              // Map USER_RANK
+      userSpecialty: row.USER_SPECIALTY,              // Map USER_SPECIALTY
+      episodeType: row.EPISODE_TYPE,              // Map EPISODE_TYPE 
       recordMonth: row.recordMonth,  // Map RECORD_DATE as month
       recordYear: row.recordYear     // Map RECORD_DATE as year
     }));
@@ -31,31 +34,34 @@ async function getStats(hospitalCode, metrics, dateFrom, dateTo) {
   }
 }
 
-async function addStat(clusterCode, hospitalCode, metrics, dataType, value, recordYear, recordMonth) {
+async function addStat(clusterCode, hospitalCode, metrics, dataType, value, userRank, userSpecialty, episodeType, recordYear, recordMonth) {
   try {
-      const recordDate = `${recordYear}-${recordMonth}-01`; // Format date as 'YYYY-MM-DD'
-      const recordId = uuidv4(); // Generate a unique ID for the record
+    const recordDate = `${recordYear}-${recordMonth}-01`; // Format date as 'YYYY-MM-DD'
+    const recordId = uuidv4(); // Generate a unique ID for the record
 
-      const query = `
+    const query = `
           INSERT INTO STATISTIC 
-          (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, RECORD_DATE, CREATE_DATETIME) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+          (RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, EPISODE_TYPE, RECORD_DATE, CREATE_DATETIME) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?,?, ?, NOW())
       `;
 
-      const [result] = await db.query(query, [
-          recordId,
-          clusterCode,
-          hospitalCode,
-          metrics,
-          dataType,
-          value,
-          recordDate
-      ]);
+    const [result] = await db.query(query, [
+      recordId,
+      clusterCode,
+      hospitalCode,
+      metrics,
+      dataType,
+      userRank,
+      userSpecialty,
+      episodeType,
+      value,
+      recordDate
+    ]);
 
-      return result;
+    return result;
   } catch (err) {
-      console.error('Error inserting data:', err);
-      throw err;
+    console.error('Error inserting data:', err);
+    throw err;
   }
 }
 
