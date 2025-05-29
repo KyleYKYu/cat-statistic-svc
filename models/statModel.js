@@ -4,8 +4,8 @@ const { v4: uuidv4 } = require('uuid');
 async function getStats(hospitalCode, metrics, dateFrom, dateTo) {
   try {
     const query = `
-      SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, EPISODE_TYPE 
-             MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
+      SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, 
+      EPISODE_TYPE, MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
       FROM STATISTIC
       WHERE HOSPITAL_CODE = ? AND METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
     `;
