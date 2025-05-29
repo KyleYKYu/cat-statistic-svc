@@ -38,7 +38,9 @@ async function uploadCsv(req, res, next) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const { METRICS, YEAR, MONTH } = req.body; // Extract metadata from the request body
+    const METRICS = req.body.METRICS ? req.body.METRICS.replace(/^"|"$/g, '') : null; // Remove quotes if present
+    const YEAR = req.body.YEAR ? req.body.YEAR.replace(/^"|"$/g, '') : null; // Remove quotes if present
+    const MONTH = req.body.MONTH ? req.body.MONTH.replace(/^"|"$/g, '') : null; // Remove quotes if present
     if (!METRICS || !YEAR || !MONTH) {
       return res.status(400).json({ error: 'Metadata is required' });
     }
@@ -55,13 +57,18 @@ async function uploadCsv(req, res, next) {
         try {
           // Insert each row into the database
           for (const stat of stats) {
-            const { HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT } = stat;
-            
             switch (METRICS) {
-              case MEMO_CREATE || MEMO_COMPLETE || MEMO_DELETE || MEMO_DEDUCT_REPLY || MEMO_REPLY:
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS.replace(/^"|"$/g, ''), "NORMAL", NORMALCOUNT, YEAR.replace(/^"|"$/g, ''), MONTH.replace(/^"|"$/g, ''));
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS.replace(/^"|"$/g, ''), "PRIORITY", PRIORITYCOUNT, YEAR.replace(/^"|"$/g, ''), MONTH.replace(/^"|"$/g, ''));
+              case 'MEMO_CREATE' || 'MEMO_DELETE' || 'MEMO_COMPLETE' || 'MEMO_REPLY' || 'MEMO_REDUCT_REPLY' || 'MEMO_SHARE':
+                const { HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT } = stat;
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMAL", NORMALCOUNT, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITY", PRIORITYCOUNT, YEAR, MONTH);
                 break;
+              case 'CHEST_PAIN_GREEN_CHANNEL':
+                const { CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, ECG_NOTE_UPDATE, ECG_DELETE} = stat;
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "CHEST_PAIN_CASE_WITH_ECG_AVAILABLE", CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOTE_UPDATE", ECG_NOTE_UPDATE, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_DELETE", ECG_DELETE, YEAR, MONTH);
+                break;  
               default:
                 break;
             }
