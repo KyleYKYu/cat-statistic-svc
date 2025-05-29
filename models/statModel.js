@@ -51,10 +51,10 @@ async function addStat(clusterCode, hospitalCode, metrics, dataType, value, user
       hospitalCode,
       metrics,
       dataType,
+      value,
       userRank,
       userSpecialty,
       episodeType,
-      value,
       recordDate
     ]);
 
