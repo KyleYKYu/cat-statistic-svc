@@ -57,14 +57,18 @@ async function uploadCsv(req, res, next) {
         try {
           // Insert each row into the database
           for (const stat of stats) {
+            const { HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, ECG_NOTE_UPDATE, ECG_DELETE} = stat;
             switch (METRICS) {
-              case 'MEMO_CREATE' || 'MEMO_DELETE' || 'MEMO_COMPLETE' || 'MEMO_REPLY' || 'MEMO_REDUCT_REPLY' || 'MEMO_SHARE':
-                const { HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT } = stat;
+              case 'MEMO_CREATE':
+              case 'MEMO_DELETE':
+              case 'MEMO_COMPLETE':
+              case 'MEMO_REPLY':
+              case 'MEMO_REDUCT_REPLY':
+              case 'MEMO_SHARE':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMAL", NORMALCOUNT, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITY", PRIORITYCOUNT, YEAR, MONTH);
                 break;
               case 'CHEST_PAIN_GREEN_CHANNEL':
-                const { CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, ECG_NOTE_UPDATE, ECG_DELETE} = stat;
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "CHEST_PAIN_CASE_WITH_ECG_AVAILABLE", CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOTE_UPDATE", ECG_NOTE_UPDATE, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_DELETE", ECG_DELETE, YEAR, MONTH);
