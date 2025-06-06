@@ -9,8 +9,8 @@ const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded f
 
 async function getStats(req, res, next) {
   try {
-    const { HOSPITAL_CODE, METRICS, DATE_FROM, DATE_TO } = req.query;
-    const stats = await statModel.getStats(HOSPITAL_CODE, METRICS, DATE_FROM, DATE_TO);
+    const { HOSPITAL_CODES, METRICS, DATE_FROM, DATE_TO } = req.query;
+    const stats = await statModel.getStats(HOSPITAL_CODES, METRICS, DATE_FROM, DATE_TO);
     res.json(stats);
   } catch (err) {
     next(err); // Pass error to error-handling middleware

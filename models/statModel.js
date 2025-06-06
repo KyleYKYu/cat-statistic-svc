@@ -1,24 +1,30 @@
 const db = require('../utils/db');
 const { v4: uuidv4 } = require('uuid');
 
-async function getStats(hospitalCode, metrics, dateFrom, dateTo) {
+async function getStats(hospitalCodes, metrics, dateFrom, dateTo) {
   try {
-    const query = hospitalCode?`
+    // Split the hospitalCode string and trim spaces from each value
+    const hospitalCodesArray = hospitalCodes
+      ? hospitalCodes.split(',').map(code => code.trim())
+      : null;
+
+    const query = hospitalCodesArray ? `
       SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, 
       EPISODE_TYPE, MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
       FROM STATISTIC
-      WHERE HOSPITAL_CODE = ? AND METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
-    `:`
+      WHERE HOSPITAL_CODE IN (?) AND METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
+    `: `
       SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, 
       EPISODE_TYPE, MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
       FROM STATISTIC
       WHERE METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
     `;
 
-    if(hospitalCode)
-      [rows] = await db.query(query, [hospitalCode, metrics, dateFrom, dateTo]);
-    else
-      [rows] = await db.query(query, [metrics, dateFrom, dateTo]);
+    const queryParams = hospitalCodesArray 
+      ? [hospitalCodesArray, metrics, dateFrom, dateTo] 
+      : [metrics, dateFrom, dateTo];
+
+    const [rows] = await db.query(query, queryParams);
 
     // Map the rows into an array of entities
     const stats = rows.map(row => ({
