@@ -3,14 +3,22 @@ const { v4: uuidv4 } = require('uuid');
 
 async function getStats(hospitalCode, metrics, dateFrom, dateTo) {
   try {
-    const query = `
+    const query = hospitalCode?`
       SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, 
       EPISODE_TYPE, MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
       FROM STATISTIC
       WHERE HOSPITAL_CODE = ? AND METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
+    `:`
+      SELECT RECORD_ID, CLUSTER_CODE, HOSPITAL_CODE, METRICS, DATA_TYPE, VALUE, USER_RANK, USER_SPECIALTY, 
+      EPISODE_TYPE, MONTH(RECORD_DATE) AS recordMonth, YEAR(RECORD_DATE) AS recordYear
+      FROM STATISTIC
+      WHERE METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
     `;
 
-    const [rows] = await db.query(query, [hospitalCode, metrics, dateFrom, dateTo]);
+    if(hospitalCode)
+      [rows] = await db.query(query, [hospitalCode, metrics, dateFrom, dateTo]);
+    else
+      [rows] = await db.query(query, [metrics, dateFrom, dateTo]);
 
     // Map the rows into an array of entities
     const stats = rows.map(row => ({
