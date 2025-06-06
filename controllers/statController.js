@@ -44,6 +44,7 @@ async function uploadCsv(req, res, next) {
     if (!METRICS || !YEAR || !MONTH) {
       return res.status(400).json({ error: 'Metadata is required' });
     }
+    await statModel.delStat(METRICS, YEAR, MONTH);
 
     const filePath = path.join(__dirname, '../uploads', req.file.filename);
 

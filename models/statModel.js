@@ -20,8 +20,8 @@ async function getStats(hospitalCodes, metrics, dateFrom, dateTo) {
       WHERE METRICS = ? AND RECORD_DATE BETWEEN ? AND ?
     `;
 
-    const queryParams = hospitalCodesArray 
-      ? [hospitalCodesArray, metrics, dateFrom, dateTo] 
+    const queryParams = hospitalCodesArray
+      ? [hospitalCodesArray, metrics, dateFrom, dateTo]
       : [metrics, dateFrom, dateTo];
 
     const [rows] = await db.query(query, queryParams);
@@ -79,6 +79,25 @@ async function addStat(clusterCode, hospitalCode, metrics, dataType, value, user
   }
 }
 
+async function delStat(metrics, recordYear, recordMonth) {
+  try {
+    const recordDate = `${recordYear}-${recordMonth}-01`; // Format date as 'YYYY-MM-DD'
+    const recordId = uuidv4(); // Generate a unique ID for the record
+
+    const query = `
+          DELETE FROM STATISTIC 
+          WHERE METRICS = ? AND RECORD_DATE = ?
+      `;
+
+    const [result] = await db.query(query, [metrics, recordDate]);
+
+    return result;
+  } catch (err) {
+    console.error('Error inserting data:', err);
+    throw err;
+  }
+}
+
 function convertMonthToNumber(monthAbbreviation) {
   const months = {
     JAN: '01',
@@ -98,4 +117,4 @@ function convertMonthToNumber(monthAbbreviation) {
   return months[monthAbbreviation.toUpperCase()] || null;
 }
 
-module.exports = { getStats, addStat };
+module.exports = { getStats, addStat, delStat };
