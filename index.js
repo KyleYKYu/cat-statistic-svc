@@ -1,6 +1,6 @@
-const express = require('express');
-const routes = require('./routes');
-const errorHandler = require('./middlewares/errorHandler');
+const express = require("express");
+const routes = require("./routes");
+const errorHandler = require("./middlewares/errorHandler");
 const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,13 +9,13 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 let corsOptions = {
-  origin: ["http://localhost:3001"],
+  origin: "*",
 };
 
 app.use(cors(corsOptions));
 
 // Routes
-app.use('/api', routes);
+app.use("/api", routes);
 
 // Error Handling Middleware
 //app.use(errorHandler);
