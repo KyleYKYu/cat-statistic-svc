@@ -58,11 +58,11 @@ async function uploadCsv(req, res, next) {
         try {
           // Insert each row into the database
           for (const stat of stats) {
-            const { 
-              HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, 
-              ECG_NOTE_UPDATE, ECG_DELETE, NORMALGROUPCOUNT, PRIORITYGROUPCOUNT, 
-              NORMALINDIVIDUALCOUNT, PRIORITYINDIVIDUALCOUNT, PATIENT_HOSP_CODE, 
-              USER_SPECIALTY, USERSPECIALTY, TOTAL, RANK_ALIAS, RANKALIAS, PATIENT_TYPE} = stat;
+            const {
+              HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE,
+              ECG_NOTE_UPDATE, ECG_DELETE, NORMALGROUPCOUNT, PRIORITYGROUPCOUNT,
+              NORMALINDIVIDUALCOUNT, PRIORITYINDIVIDUALCOUNT, PATIENT_HOSP_CODE,
+              USER_SPECIALTY, USERSPECIALTY, TOTAL, RANK_ALIAS, RANKALIAS, PATIENT_TYPE } = stat;
 
             switch (METRICS) {
               case 'MEMO_CREATE':
@@ -80,6 +80,12 @@ async function uploadCsv(req, res, next) {
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMALINDIVIDUALCOUNT", NORMALINDIVIDUALCOUNT, null, null, null, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITYINDIVIDUALCOUNT", PRIORITYINDIVIDUALCOUNT, null, null, null, YEAR, MONTH);
                 break;
+              case 'CAT_PATIENT_LIST_OPEN':
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "TOTAL", TOTAL, null, null, null, YEAR, MONTH);
+                break;
+              case 'CAT_PREVIEW_OPEN':
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "TOTAL", TOTAL, null, null, null, YEAR, MONTH);
+                break;
               case 'CHEST_PAIN_GREEN_CHANNEL':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "CHEST_PAIN_CASE_WITH_ECG_AVAILABLE", CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, null, null, null, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOTE_UPDATE", ECG_NOTE_UPDATE, null, null, null, YEAR, MONTH);
@@ -90,13 +96,13 @@ async function uploadCsv(req, res, next) {
                 break;
               case 'MEMO_CREATE_USER_SPECIALTY_BY_RANK':
                 await statModel.addStat(getCluster(PATIENT_HOSP_CODE), PATIENT_HOSP_CODE, METRICS, "TOTAL", TOTAL, RANKALIAS, USERSPECIALTY, null, YEAR, MONTH);
-                break;  
+                break;
               case 'MEMO_CREATE_USER_RANK':
                 await statModel.addStat(getCluster(PATIENT_HOSP_CODE), PATIENT_HOSP_CODE, METRICS, "TOTAL", TOTAL, RANK_ALIAS, null, null, YEAR, MONTH);
-                break;  
+                break;
               case 'PATIENT_TYPE':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "TOTAL", TOTAL, null, null, PATIENT_TYPE, YEAR, MONTH);
-                break;  
+                break;
               default:
                 break;
             }
@@ -134,33 +140,33 @@ function getCluster(hospCode) {
     QMH: "HKWC",
     TWH: "HKWC",
     TYH: "HKWC",
-    BH: "KCC",	
-    HCH: "KCC",	
-    HKE: "KCC",	
-    KH: "KCC",	
-    KWH: "KCC",	
-    OLM: "KCC",	
-    QEH: "KCC",	
+    BH: "KCC",
+    HCH: "KCC",
+    HKE: "KCC",
+    KH: "KCC",
+    KWH: "KCC",
+    OLM: "KCC",
+    QEH: "KCC",
     WTS: "KCC",
     HHH: "KEC",
-    TKO: "KEC",	
+    TKO: "KEC",
     UCH: "KEC",
-    CMC: "KWC",	
-    KCH: "KWC",	
-    NLT: "KWC",	
-    PMH: "KWC",	
+    CMC: "KWC",
+    KCH: "KWC",
+    NLT: "KWC",
+    PMH: "KWC",
     YCH: "KWC",
-    AHN: "NTEC",	
-    BBH: "NTEC",	
-    CHS: "NTEC",	
-    NDH: "NTEC",	
-    PWH: "NTEC",	
-    SH: "NTEC",	
+    AHN: "NTEC",
+    BBH: "NTEC",
+    CHS: "NTEC",
+    NDH: "NTEC",
+    PWH: "NTEC",
+    SH: "NTEC",
     TPH: "NTEC",
-    CPH: "NTWC",	
-    POH: "NTWC",	
-    SLH: "NTWC",	
-    TMH: "NTWC",	
+    CPH: "NTWC",
+    POH: "NTWC",
+    SLH: "NTWC",
+    TMH: "NTWC",
     TSH: "NTWC"
   }
 
