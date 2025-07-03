@@ -81,9 +81,7 @@ async function uploadCsv(req, res, next) {
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITYINDIVIDUALCOUNT", PRIORITYINDIVIDUALCOUNT, null, null, null, YEAR, MONTH);
                 break;
               case 'CAT_PATIENT_LIST_OPEN':
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "TOTAL", TOTAL, null, null, null, YEAR, MONTH);
-                break;
-              case 'CAT_PREVIEW_OPEN':
+              case 'CAT_MEMO_PREVIEW':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "TOTAL", TOTAL, null, null, null, YEAR, MONTH);
                 break;
               case 'CHEST_PAIN_GREEN_CHANNEL':
