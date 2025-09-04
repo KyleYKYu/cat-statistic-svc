@@ -62,7 +62,8 @@ async function uploadCsv(req, res, next) {
               HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE,
               ECG_NOTE_UPDATE, ECG_DELETE, NORMALGROUPCOUNT, PRIORITYGROUPCOUNT,
               NORMALINDIVIDUALCOUNT, PRIORITYINDIVIDUALCOUNT, PATIENT_HOSP_CODE,
-              USER_SPECIALTY, USERSPECIALTY, TOTAL, RANK_ALIAS, RANKALIAS, PATIENT_TYPE } = stat;
+              USER_SPECIALTY, USERSPECIALTY, TOTAL, RANK_ALIAS, RANKALIAS, PATIENT_TYPE,
+              UNIQUE_PATIENT, ACTIVATION_NUMBER, MESSAGE_SENT, MESSAGE_REPLIED } = stat;
 
             switch (METRICS) {
               case 'MEMO_CREATE':
@@ -86,8 +87,15 @@ async function uploadCsv(req, res, next) {
                 break;
               case 'CHEST_PAIN_GREEN_CHANNEL':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "CHEST_PAIN_CASE_WITH_ECG_AVAILABLE", CHEST_PAIN_CASE_WITH_ECG_AVAILABLE, null, null, null, YEAR, MONTH);
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOT  E_UPDATE", ECG_NOTE_UPDATE, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOTE_UPDATE", ECG_NOTE_UPDATE, null, null, null, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_DELETE", ECG_DELETE, null, null, null, YEAR, MONTH);
+                break;
+              case 'STROKE_GREEN_CHANNEL_1ST_TERR':
+              case 'STROKE_GREEN_CHANNEL_2ND_TERR':
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "UNIQUE_PATIENT", UNIQUE_PATIENT, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ACTIVATION_NUMBER", ACTIVATION_NUMBER, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "MESSAGE_SENT", MESSAGE_SENT, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "MESSAGE_REPLIED", MESSAGE_REPLIED, null, null, null, YEAR, MONTH);
                 break;
               case 'MEMO_CREATE_USER_SPECIALTY':
                 await statModel.addStat(getCluster(PATIENT_HOSP_CODE), PATIENT_HOSP_CODE, METRICS, "TOTAL", TOTAL, null, USER_SPECIALTY, null, YEAR, MONTH);
