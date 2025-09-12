@@ -90,8 +90,8 @@ async function uploadCsv(req, res, next) {
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_NOTE_UPDATE", ECG_NOTE_UPDATE, null, null, null, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ECG_DELETE", ECG_DELETE, null, null, null, YEAR, MONTH);
                 break;
-              case 'STROKE_GREEN_CHANNEL_1ST_TERR':
-              case 'STROKE_GREEN_CHANNEL_2ND_TERR':
+              case 'STROKE_GREEN_CHANNEL_AEIS':
+              case 'STROKE_GREEN_CHANNEL_ACUTE_STROKE':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "UNIQUE_PATIENT", UNIQUE_PATIENT, null, null, null, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "ACTIVATION_NUMBER", ACTIVATION_NUMBER, null, null, null, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "MESSAGE_SENT", MESSAGE_SENT, null, null, null, YEAR, MONTH);
