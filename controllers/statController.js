@@ -59,7 +59,7 @@ async function uploadCsv(req, res, next) {
           // Insert each row into the database
           for (const stat of stats) {
             const {
-              HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, GREENCHANNELNORMAL, GREENCHANNELPRIORITY, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE,
+              HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, GREENCHANNELNORMALCOUNT, GREENCHANNELPRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE,
               ECG_NOTE_UPDATE, ECG_DELETE, NORMALGROUPCOUNT, PRIORITYGROUPCOUNT,
               NORMALINDIVIDUALCOUNT, PRIORITYINDIVIDUALCOUNT, PATIENT_HOSP_CODE,
               USER_SPECIALTY, USERSPECIALTY, TOTAL, RANK_ALIAS, RANKALIAS, PATIENT_TYPE,
@@ -77,9 +77,9 @@ async function uploadCsv(req, res, next) {
                 break;
               case 'MEMO_CREATE_DETAILS':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMAL", NORMALCOUNT, null, null, null, YEAR, MONTH);
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "GREENCHANNELNORMAL", GREENCHANNELNORMAL, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "GREENCHANNELNORMAL", GREENCHANNELNORMALCOUNT, null, null, null, YEAR, MONTH);
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "PRIORITY", PRIORITYCOUNT, null, null, null, YEAR, MONTH);
-                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "GREENCHANNELPRIORITY", GREENCHANNELPRIORITY, null, null, null, YEAR, MONTH);
+                await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "GREENCHANNELPRIORITY", GREENCHANNELPRIORITYCOUNT, null, null, null, YEAR, MONTH);
                 break;
               case 'HA_CHAT_DETAIL':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "NORMALGROUPCOUNT", NORMALGROUPCOUNT, null, null, null, YEAR, MONTH);
