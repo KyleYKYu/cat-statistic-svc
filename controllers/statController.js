@@ -156,6 +156,7 @@ function getCluster(hospCode) {
     HCH: "KCC",
     HKE: "KCC",
     KH: "KCC",
+    KTH: "KCC",
     KWH: "KCC",
     OLM: "KCC",
     QEH: "KCC",
