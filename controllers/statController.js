@@ -62,7 +62,7 @@ async function uploadCsv(req, res, next) {
               HOSP_CODE, NORMALCOUNT, PRIORITYCOUNT, GREENCHANNELNORMALCOUNT, GREENCHANNELPRIORITYCOUNT, CHEST_PAIN_CASE_WITH_ECG_AVAILABLE,
               ECG_NOTE_UPDATE, ECG_DELETE, NORMALGROUPCOUNT, PRIORITYGROUPCOUNT,
               NORMALINDIVIDUALCOUNT, PRIORITYINDIVIDUALCOUNT, PATIENT_HOSP_CODE,
-              USER_SPECIALTY, USERSPECIALTY, TOTAL, RANK_ALIAS, RANKALIAS, PATIENT_TYPE,
+              USER_SPECIALTY, USERSPECIALTY, TOTAL, RANK_ALIAS, RANKALIAS, PATIENT_TYPE, RANK,
               UNIQUE_PATIENT, ACTIVATION_NUMBER, MESSAGE_SENT, MESSAGE_REPLIED } = stat;
 
             switch (METRICS) {
@@ -114,6 +114,9 @@ async function uploadCsv(req, res, next) {
                 break;
               case 'PATIENT_TYPE':
                 await statModel.addStat(getCluster(HOSP_CODE), HOSP_CODE, METRICS, "TOTAL", TOTAL, null, null, PATIENT_TYPE, YEAR, MONTH);
+                break;
+              case 'MEMO_CREATE_USER_RANK_WITHOUT_RANK_ALIAS':
+                await statModel.addStat(getCluster(PATIENT_HOSP_CODE), PATIENT_HOSP_CODE, METRICS, "TOTAL", TOTAL, RANK, null, null, YEAR, MONTH);
                 break;
               default:
                 break;
